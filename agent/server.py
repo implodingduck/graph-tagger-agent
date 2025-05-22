@@ -4,6 +4,9 @@ import logging
 from logging.config import dictConfig
 from .log_config import log_config
 import json
+import os
+
+from azure.identity.aio import ClientSecretCredential
 
 dictConfig(log_config)
 logger = logging.getLogger("api-logger")
@@ -46,5 +49,20 @@ async def notifications(request: Request):
     
     # Process the notification (this is just a placeholder)
     # You can add your processing logic here
+
+    body_json = json.loads(body)
+    credentials = ClientSecretCredential(
+        os.environ.get('GRAPH_TENANT_ID'),
+        os.environ.get('GRAPH_CLIENT_ID'),
+        os.environ.get('GRAPH_CLIENT_SECRET'),
+    )
+    scopes = ['https://graph.microsoft.com/.default']
+    client = GraphServiceClient(credentials=credentials, scopes=scopes)
+    for notification in body_json['value']:
+        # Process each notification
+        logger.info(f"Processing notification: {notification}")
+        # Example: Get the resource URL from the notification
+        resource_url = notification['resource']
+        logger.info(f"Resource URL: {resource_url}")
 
     return {"status": "success", "message": "Notification received"}

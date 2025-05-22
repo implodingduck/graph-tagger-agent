@@ -5,6 +5,13 @@ export TENANT_ID=$TF_VAR_graph_tenant_id
 export CLIENT_ID=$TF_VAR_graph_client_id
 export CLIENT_SECRET=$TF_VAR_graph_client_secret
 
+
+#get current time
+export CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+# add 10070 minutes to the current time
+export EXPIRATION_TIME=$(date -u -d "$CURRENT_TIME + 10070 minutes" +"%Y-%m-%dT%H:%M:%SZ")
+
+
 # Get the access token
 TOKEN=$(curl -s -X POST \
   "https://login.microsoftonline.com/$TENANT_ID/oauth2/v2.0/token" \
@@ -22,7 +29,7 @@ fi
 # Subscribe to the Microsoft Graph API
 
 
-export PAYLOAD='{"changeType": "created","notificationUrl": "'$NOTIFICATION_URL'","resource": "/users/'$EMAIL'/messages","expirationDateTime": "2026-12-31T23:59:59.9999999Z","clientState": "secretClientValue"}'
+export PAYLOAD='{"changeType": "created","notificationUrl": "'$NOTIFICATION_URL'","resource": "/users/'$EMAIL'/messages","expirationDateTime": "'$EXPIRATION_TIME'","clientState": "secretClientValue"}'
 
 echo $PAYLOAD | jq .
 
