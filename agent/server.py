@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import PlainTextResponse
 import logging
 from logging.config import dictConfig
 from .log_config import log_config
@@ -41,7 +42,7 @@ async def notifications(request: Request):
     logger.info(f"Received notification query_params: {dict(request.query_params)}")
     if "validationToken" in dict(request.query_params):
         logger.info(f"Received validation token: {request.query_params['validationToken']}")
-        return request.query_params["validationToken"]
+        return PlainTextResponse(request.query_params["validationToken"])
     
     # Process the notification (this is just a placeholder)
     # You can add your processing logic here
