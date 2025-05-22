@@ -37,7 +37,11 @@ async def read_root():
 async def notifications(request: Request):
     # Log the request body
     body = await request.body()
-    logger.info(f"Received notification: {body}")
+    logger.info(f"Received notification body: {body}")
+    logger.info(f"Received notification query_params: {dict(request.query_params)}")
+    if "validationToken" in dict(request.query_params):
+        logger.info(f"Received validation token: {request.query_params['validationToken']}")
+        return request.query_params["validationToken"]
     
     # Process the notification (this is just a placeholder)
     # You can add your processing logic here
