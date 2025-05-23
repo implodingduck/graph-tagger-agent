@@ -26,3 +26,8 @@ variable "graph_client_secret" {
   type = string
   sensitive = true  
 }
+
+variable "graph_dl_id" {
+  type = string
+  sensitive = true
+}

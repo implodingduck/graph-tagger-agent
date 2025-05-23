@@ -85,6 +85,10 @@ resource "azurerm_container_app" "this" {
         name = "GRAPH_CLIENT_SECRET"
         value = var.graph_client_secret
       }
+      env {
+        name = "GRAPH_DL_ID"
+        value = var.graph_dl_id
+      }
     }
 
     http_scale_rule {

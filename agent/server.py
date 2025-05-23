@@ -64,6 +64,11 @@ async def notifications(request: Request):
     )
     scopes = ['https://graph.microsoft.com/.default']
     client = GraphServiceClient(credentials=credentials, scopes=scopes)
+    members = await client.groups.by_group_id(os.environ.get("GRAPH_DL_ID")).members.get()
+        for member in members.value:
+            print(member.display_name)
+
+
     for notification in body_json['value']:
         # Process each notification
         logger.info(f"Processing notification: {notification}")
@@ -77,5 +82,14 @@ async def notifications(request: Request):
         message = await client.users.by_user_id(user_id).messages.by_message_id(message_id).get()
         body_content = message.body.content
         logger.info(f"Message: {body_content}")
+
+        for member in members.value:
+            update_message = Message(
+                categories=["tagged"]
+            )
+            await client.users.by_user_id(member.id).messages.by_message_id(message_id).patch(update_message)
+            logger.info(f"Updated message for user: {member.display_name}")
+
+        
 
     return {"status": "success", "message": "Notification received"}
