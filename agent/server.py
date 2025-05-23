@@ -8,6 +8,12 @@ import os
 
 from azure.identity.aio import ClientSecretCredential
 
+from msgraph import GraphServiceClient
+from msgraph.generated.models.message import Message
+from msgraph.generated.models.item_body import ItemBody
+from msgraph.generated.models.body_type import BodyType
+from msgraph.generated.models.inference_classification_type import InferenceClassificationType
+
 dictConfig(log_config)
 logger = logging.getLogger("api-logger")
 
@@ -64,5 +70,12 @@ async def notifications(request: Request):
         # Example: Get the resource URL from the notification
         resource_url = notification['resource']
         logger.info(f"Resource URL: {resource_url}")
+        resource_parts = resource_url.split('/')
+        user_id = resource_parts[1]
+        message_id = resource_parts[3]
+
+        message = await client.users.by_user_id(user_id).messages.by_message_id(message_id).get()
+        body_content = message.body.content
+        logger.info(f"Message: {body_content}")
 
     return {"status": "success", "message": "Notification received"}
