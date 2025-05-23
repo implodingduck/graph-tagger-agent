@@ -65,8 +65,8 @@ async def notifications(request: Request):
     scopes = ['https://graph.microsoft.com/.default']
     client = GraphServiceClient(credentials=credentials, scopes=scopes)
     members = await client.groups.by_group_id(os.environ.get("GRAPH_DL_ID")).members.get()
-        for member in members.value:
-            print(member.display_name)
+    for member in members.value:
+        print(member.display_name)
 
 
     for notification in body_json['value']:
