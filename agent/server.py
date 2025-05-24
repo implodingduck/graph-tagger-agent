@@ -104,7 +104,7 @@ async def notifications(request: Request):
                 query_parameters=query_params
             )
 
-            member_messages = await client.users.by_user_id(member.id).mail_folders("inbox").messages.get(request_configuration=request_configuration)            )
+            member_messages = await client.users.by_user_id(member.id).mail_folders("inbox").messages.get(request_configuration=request_configuration)
             # check if member_messages is not empty
             if not member_messages:
                 logger.info(f"No messages found for member: {member.display_name}")
