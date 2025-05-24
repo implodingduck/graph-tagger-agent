@@ -83,12 +83,11 @@ async def notifications(request: Request):
         body_content = message.body.content
         logger.info(f"Message: {body_content}")
 
-        for member in members.value:
-            update_message = Message(
-                categories=["tagged"]
-            )
-            await client.users.by_user_id(member.id).messages.by_message_id(message_id).patch(update_message)
-            logger.info(f"Updated message for user: {member.display_name}")
+        update_message = Message(
+            categories=["tagged"]
+        )
+        await client.users.by_user_id(user_id).messages.by_message_id(message_id).patch(update_message)
+
 
         
 

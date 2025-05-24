@@ -68,7 +68,7 @@ resource "azurerm_container_app" "this" {
 
   template {
     container {
-      name   = "frontend"
+      name   = "taggeragent"
       image  = "ghcr.io/implodingduck/graph-tagger-agent:latest"
       cpu    = 0.25
       memory = "0.5Gi"
