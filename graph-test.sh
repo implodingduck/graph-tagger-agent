@@ -38,4 +38,3 @@ fi
 #   -H "Authorization: Bearer $TOKEN" \
 #   -H "Content-Type: application/json" \
 #   -d "$PAYLOAD" | jq .
-

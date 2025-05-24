@@ -10,9 +10,9 @@ from azure.identity.aio import ClientSecretCredential
 
 from msgraph import GraphServiceClient
 from msgraph.generated.models.message import Message
-from msgraph.generated.models.item_body import ItemBody
-from msgraph.generated.models.body_type import BodyType
-from msgraph.generated.models.inference_classification_type import InferenceClassificationType
+
+from msgraph.generated.users.item.mail_folders.item.messages import MessagesRequestBuilder
+
 
 dictConfig(log_config)
 logger = logging.getLogger("api-logger")
@@ -94,10 +94,17 @@ async def notifications(request: Request):
         for member in members.value:
             # filter user messages by conversation_id and 
             logger.info(f"Processing member: {member.display_name}")
-            member_messages = await client.users.by_user_id(member.id).messages.get(
-                filter=f"conversationId eq '{message.conversation_id}' and conversationIndex eq '{message.conversation_index}'",
+
+            query_params = MessagesRequestBuilder.MessagesRequestBuilderGetQueryParameters(
+                filter=f"conversationId eq '{message.conversation_id}'",
                 top=1
             )
+
+            request_configuration = MessagesRequestBuilder.MessagesRequestBuilderGetRequestConfiguration(
+                query_parameters=query_params
+            )
+
+            member_messages = await client.users.by_user_id(member.id).mail_folders("inbox").messages.get(request_configuration=request_configuration)            )
             # check if member_messages is not empty
             if not member_messages:
                 logger.info(f"No messages found for member: {member.display_name}")
@@ -106,11 +113,6 @@ async def notifications(request: Request):
                 logger.info(f"Found {len(member_messages)} messages for member: {member.display_name}")
                 logger.info(f"Member message id: {member_messages[0].id}")
                 await client.users.by_user_id(member.id).messages.by_message_id(member_messages[0].id).patch(update_message)
-
-            
-
-
-
         
 
     return {"status": "success", "message": "Notification received"}
