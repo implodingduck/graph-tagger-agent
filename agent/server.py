@@ -82,11 +82,33 @@ async def notifications(request: Request):
         message = await client.users.by_user_id(user_id).messages.by_message_id(message_id).get()
         body_content = message.body.content
         logger.info(f"Message: {body_content}")
+        logger.info(f"Message subject: {message.subject}")
+        logger.info(f"Message conversation_id: {message.conversation_id}")
+        logger.info(f"Message conversation_index: {message.conversation_index}")
 
         update_message = Message(
             categories=["tagged"]
         )
         await client.users.by_user_id(user_id).messages.by_message_id(message_id).patch(update_message)
+
+        for member in members.value:
+            # filter user messages by conversation_id and 
+            logger.info(f"Processing member: {member.display_name}")
+            member_messages = await client.users.by_user_id(member.id).messages.get(
+                filter=f"conversationId eq '{message.conversation_id}' and conversationIndex eq '{message.conversation_index}'",
+                top=1
+            )
+            # check if member_messages is not empty
+            if not member_messages:
+                logger.info(f"No messages found for member: {member.display_name}")
+                continue
+            else:
+                logger.info(f"Found {len(member_messages)} messages for member: {member.display_name}")
+                logger.info(f"Member message id: {member_messages[0].id}")
+                await client.users.by_user_id(member.id).messages.by_message_id(member_messages[0].id).patch(update_message)
+
+            
+
 
 
         
