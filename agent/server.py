@@ -79,6 +79,7 @@ async def notifications(request: Request):
         user_id = resource_parts[1]
         message_id = resource_parts[3]
 
+        # Get the message ID from the notification
         message = await client.users.by_user_id(user_id).messages.by_message_id(message_id).get()
         body_content = message.body.content
         logger.info(f"Message: {body_content}")
@@ -86,15 +87,16 @@ async def notifications(request: Request):
         logger.info(f"Message conversation_id: {message.conversation_id}")
         logger.info(f"Message conversation_index: {message.conversation_index}")
 
+        # Add the tagged category to the message
         update_message = Message(
             categories=["tagged"]
         )
         await client.users.by_user_id(user_id).messages.by_message_id(message_id).patch(update_message)
 
+        # Get the members of the distribution list
         for member in members.value:
-            # filter user messages by conversation_id and 
             logger.info(f"Processing member: {member.display_name}")
-
+            # filter user messages by conversation_id
             query_params = MessagesRequestBuilder.MessagesRequestBuilderGetQueryParameters(
                 filter=f"conversationId eq '{message.conversation_id}'",
             )
@@ -112,6 +114,7 @@ async def notifications(request: Request):
                 logger.info(f"Found {len(member_messages.value)} messages for member: {member.display_name}")
                 for member_message in member_messages.value:
                     logger.info(f"Member message id: {member_message.id}")
+                    # tag the member message with the same category
                     await client.users.by_user_id(member.id).messages.by_message_id(member_message.id).patch(update_message)
         
 
