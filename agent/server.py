@@ -11,7 +11,7 @@ from azure.identity.aio import ClientSecretCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.models.message import Message
 
-from msgraph.generated.users.item.mail_folders.item.messages import MessagesRequestBuilder
+from msgraph.generated.users.item.mail_folders.item.messages.messages_request_builder import MessagesRequestBuilder
 
 
 dictConfig(log_config)
