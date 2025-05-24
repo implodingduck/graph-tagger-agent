@@ -12,7 +12,7 @@ from msgraph import GraphServiceClient
 from msgraph.generated.models.message import Message
 
 from msgraph.generated.users.item.mail_folders.item.messages.messages_request_builder import MessagesRequestBuilder
-
+from kiota_abstractions.base_request_configuration import RequestConfiguration
 
 dictConfig(log_config)
 logger = logging.getLogger("api-logger")
@@ -97,14 +97,13 @@ async def notifications(request: Request):
 
             query_params = MessagesRequestBuilder.MessagesRequestBuilderGetQueryParameters(
                 filter=f"conversationId eq '{message.conversation_id}'",
-                top=1
             )
 
-            request_configuration = MessagesRequestBuilder.MessagesRequestBuilderGetRequestConfiguration(
-                query_parameters=query_params
+            request_configuration = RequestConfiguration(
+                query_parameters = query_params,
             )
 
-            member_messages = await client.users.by_user_id(member.id).mail_folders("inbox").messages.get(request_configuration=request_configuration)
+            member_messages = await graph_client.users.by_user_id(member.id).mail_folders.by_mail_folder_id('inbox').messages.get(request_configuration = request_configuration)
             # check if member_messages is not empty
             if not member_messages:
                 logger.info(f"No messages found for member: {member.display_name}")
