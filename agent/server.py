@@ -105,13 +105,14 @@ async def notifications(request: Request):
 
             member_messages = await client.users.by_user_id(member.id).mail_folders.by_mail_folder_id('inbox').messages.get(request_configuration = request_configuration)
             # check if member_messages is not empty
-            if not member_messages:
+            if not member_messages.value:
                 logger.info(f"No messages found for member: {member.display_name}")
                 continue
             else:
-                logger.info(f"Found {len(member_messages)} messages for member: {member.display_name}")
-                logger.info(f"Member message id: {member_messages[0].id}")
-                await client.users.by_user_id(member.id).messages.by_message_id(member_messages[0].id).patch(update_message)
+                logger.info(f"Found {len(member_messages.value)} messages for member: {member.display_name}")
+                for member_message in member_messages.value:
+                    logger.info(f"Member message id: {member_message.id}")
+                    await client.users.by_user_id(member.id).messages.by_message_id(member_message.id).patch(update_message)
         
 
     return {"status": "success", "message": "Notification received"}
